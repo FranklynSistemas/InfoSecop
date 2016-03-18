@@ -283,8 +283,15 @@ function validaNewRegistros(tipo,Departamento, Actividad ,callback){
 	  				});
 
 
-	  			}else{
-	  				callback(0);
+	  			}else if(dato < 0){
+	  				BDResgistros[idBD].update(elQuery,datos,{upsert:true},function(err,numAffected){
+	  					console.log(numAffected);
+	  					if(numAffected){
+	  						callback(0);
+	  					}else{
+	  						callback(0);
+	  					}
+	  				});
 	  			}
 
 	  		});
@@ -417,7 +424,7 @@ function DinamicTarger(categoria,DatosCosulta,Actividad){
 // Genera la URL segun los parametros de Fecha, numero de registros, Departamento  y Actividad Economica
 function GeneraTarget(fecha,valor,idDepartamento,idActividad){
 	console.log(" Departamento: "+valorDepartamento[idDepartamento].Valor+" Actividad: "+valorActividades[idActividad].Valor);
-	return `https://www.contratos.gov.co/consultas/resultadosConsulta.do?&departamento=${valorDepartamento[idDepartamento].Valor}&entidad=&paginaObjetivo=&fechaInicial=${fecha}&ctl00$ContentPlaceHolder1$hidIdOrgV=-1&desdeFomulario=true&registrosXPagina=${valor}&estado=2&ctl00$ContentPlaceHolder1$hidIdEmpresaVenta=-1&ctl00$ContentPlaceHolder1$hidNombreProveedor=-1&ctl00$ContentPlaceHolder1$hidRedir=&ctl00$ContentPlaceHolder1$hidIDProducto=-1&ctl00$ContentPlaceHolder1$hidNombreDemandante=-1&cuantia=0&ctl00$ContentPlaceHolder1$hidNombreProducto=-1&ctl00$ContentPlaceHolder1$hidIdEmpresaC=0&ctl00$ContentPlaceHolder1$hidIDProductoNoIngresado=-1&ctl00$ContentPlaceHolder1$hidRangoMaximoFecha=&fechaFinal=&ctl00$ContentPlaceHolder1$hidIdOrgC=-1&objeto=${valorActividades[idActividad].Valor}&tipoProceso=&ctl00$ContentPlaceHolder1$hidIDRubro=-1&municipio=0&numeroProceso=`
+	return 'https://www.contratos.gov.co/consultas/resultadosConsulta.do?&departamento='+valorDepartamento[idDepartamento].Valor+'&entidad=&paginaObjetivo=&fechaInicial='+fecha+'&ctl00$ContentPlaceHolder1$hidIdOrgV=-1&desdeFomulario=true&registrosXPagina='+valor+'&estado=2&ctl00$ContentPlaceHolder1$hidIdEmpresaVenta=-1&ctl00$ContentPlaceHolder1$hidNombreProveedor=-1&ctl00$ContentPlaceHolder1$hidRedir=&ctl00$ContentPlaceHolder1$hidIDProducto=-1&ctl00$ContentPlaceHolder1$hidNombreDemandante=-1&cuantia=0&ctl00$ContentPlaceHolder1$hidNombreProducto=-1&ctl00$ContentPlaceHolder1$hidIdEmpresaC=0&ctl00$ContentPlaceHolder1$hidIDProductoNoIngresado=-1&ctl00$ContentPlaceHolder1$hidRangoMaximoFecha=&fechaFinal=&ctl00$ContentPlaceHolder1$hidIdOrgC=-1&objeto='+valorActividades[idActividad].Valor+'&tipoProceso=&ctl00$ContentPlaceHolder1$hidIDRubro=-1&municipio=0&numeroProceso=';
 
 }
 
@@ -449,7 +456,7 @@ function RevisaDepartamentos(){
 
 	validaNewRegistros(2,numCallRevisaDepartamentos,-1,function(dato){
    					if(dato != 0 && dato != undefined){
-    				var Informacion = `Se han agregado: ${dato} Nuevos Registros en el departamento de ${valorDepartamento[numCallRevisaDepartamentos].Departamento} -- ${GeneraFechaHora()}`;
+    				var Informacion = 'Se han agregado: '+dato+'Nuevos Registros en el departamento de'+valorDepartamento[numCallRevisaDepartamentos].Departamento+' -- '+GeneraFechaHora();
 					//UltimasProcesos = `hora -- Los procesos de hoy son: ${numReg}`
    					//envioCorreos(Informacion);
    					}
@@ -474,7 +481,7 @@ function RevisaActividades(){
 
    				validaNewRegistros(3,-1,numCallRevisaActividades,function(dato){
    					if(dato != 0 && dato != undefined){
-    				var Informacion = `Se han agregado: ${dato} Nuevos Registros para la actividad ${valorActividades[numCallRevisaActividades].Actividad} -- ${GeneraFechaHora()}`;
+    				var Informacion = 'Se han agregado: '+dato+' Nuevos Registros para la actividad '+valorActividades[numCallRevisaActividades].Actividad+' -- '+GeneraFechaHora();
 					//UltimasProcesos = `hora -- Los procesos de hoy son: ${numReg}`
    					//envioCorreos(Informacion);
    					}
@@ -504,7 +511,7 @@ function RevisaActividadesDepartamentos(){
    			 	
    			 	var numActividad = numCallRevisaDepAct === valorActividades.length ? numCallRevisaDepAct-1 : numCallRevisaDepAct;
     			console.log(numDepartamento+'---Genera target----'+numCallRevisaDepAct+"-----"+numActividad);
-    			var Informacion = `Se han agregado: ${dato} Nuevos Registros para la Actividad ${valorActividades[numActividad].Actividad} en el departamento de ${valorDepartamento[numDepartamento].Departamento} -- ${GeneraFechaHora()}`;
+    			var Informacion = 'Se han agregado: '+dato+' Nuevos Registros para la Actividad '+valorActividades[numActividad].Actividad+' en el departamento de '+valorDepartamento[numDepartamento].Departamento+' -- '+GeneraFechaHora();
 				//UltimasProcesos = `hora -- Los procesos de hoy son: ${numReg}`
    				//envioCorreos(Informacion);
    				}
@@ -570,7 +577,7 @@ setInterval(function(){
     var contador =1;
    	validaNewRegistros(0,-1,-1,function(dato){
     	if(dato != 0){
-    	var Informacion = `Se han agregado: ${dato} Nuevos Registros en todo el país -- ${GeneraFechaHora()}`;
+    	var Informacion = 'Se han agregado: '+dato+' Nuevos Registros en todo el país -- '+GeneraFechaHora();
 		//UltimasProcesos = `hora -- Los procesos de hoy son: ${numReg}`
    		envioCorreos(Informacion);
    			RevisionPorLotes();
