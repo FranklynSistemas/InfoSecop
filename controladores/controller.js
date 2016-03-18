@@ -76,7 +76,7 @@ var idActividad =0;
 var numCallRevisaDepartamentos = 0;
 var numCallRevisaActividades = 0;
 var numCallRevisaDepAct = 0;
-var numDepartamento=34;
+var numDepartamento=1;
 
 //var target = `https://www.contratos.gov.co/consultas/resultadosConsulta.do?&departamento=${valorDepartamento[idDep]}&entidad=&paginaObjetivo=&fechaInicial=${fechaConsulta}&ctl00$ContentPlaceHolder1$hidIdOrgV=-1&desdeFomulario=true&registrosXPagina=${valorConsulta}&estado=2&ctl00$ContentPlaceHolder1$hidIdEmpresaVenta=-1&ctl00$ContentPlaceHolder1$hidNombreProveedor=-1&ctl00$ContentPlaceHolder1$hidRedir=&ctl00$ContentPlaceHolder1$hidIDProducto=-1&ctl00$ContentPlaceHolder1$hidNombreDemandante=-1&cuantia=0&ctl00$ContentPlaceHolder1$hidNombreProducto=-1&ctl00$ContentPlaceHolder1$hidIdEmpresaC=0&ctl00$ContentPlaceHolder1$hidIDProductoNoIngresado=-1&ctl00$ContentPlaceHolder1$hidRangoMaximoFecha=&fechaFinal=&ctl00$ContentPlaceHolder1$hidIdOrgC=-1&objeto=&tipoProceso=&ctl00$ContentPlaceHolder1$hidIDRubro=-1&municipio=0&numeroProceso=`
 MuestraHtml='No funciono';
@@ -451,7 +451,7 @@ function RevisaDepartamentos(){
    					if(dato != 0 && dato != undefined){
     				var Informacion = `Se han agregado: ${dato} Nuevos Registros en el departamento de ${valorDepartamento[numCallRevisaDepartamentos].Departamento} -- ${GeneraFechaHora()}`;
 					//UltimasProcesos = `hora -- Los procesos de hoy son: ${numReg}`
-   					envioCorreos(Informacion);
+   					//envioCorreos(Informacion);
    					}
    	});
 
@@ -476,7 +476,7 @@ function RevisaActividades(){
    					if(dato != 0 && dato != undefined){
     				var Informacion = `Se han agregado: ${dato} Nuevos Registros para la actividad ${valorActividades[numCallRevisaActividades].Actividad} -- ${GeneraFechaHora()}`;
 					//UltimasProcesos = `hora -- Los procesos de hoy son: ${numReg}`
-   					envioCorreos(Informacion);
+   					//envioCorreos(Informacion);
    					}
    				});
 
@@ -506,7 +506,7 @@ function RevisaActividadesDepartamentos(){
     			console.log(numDepartamento+'---Genera target----'+numCallRevisaDepAct+"-----"+numActividad);
     			var Informacion = `Se han agregado: ${dato} Nuevos Registros para la Actividad ${valorActividades[numActividad].Actividad} en el departamento de ${valorDepartamento[numDepartamento].Departamento} -- ${GeneraFechaHora()}`;
 				//UltimasProcesos = `hora -- Los procesos de hoy son: ${numReg}`
-   				envioCorreos(Informacion);
+   				//envioCorreos(Informacion);
    				}
    			});
 
@@ -536,8 +536,8 @@ function RevisaActividadesDepartamentos(){
 function RevisionPorLotes(){
 	numCallRevisaDepartamentos = 0;
 	numCallRevisaActividades = 0;
-	numCallRevisaDepAct = 50;
-	numDepartamento = 34;
+	numCallRevisaDepAct = 0;
+	numDepartamento = 1;
 
 	//RevisaActividadesDepartamentos();
 	RevisaActividades();
