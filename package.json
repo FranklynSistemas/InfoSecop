@@ -1,0 +1,23 @@
+{
+  "name": "infosecop",
+  "version": "1.0.0",
+  "description": "Sistema de webScraping Infosecop",
+  "main": "api.js",
+  "dependencies": {
+    "cheerio": "^0.20.0",
+    "consolidate": "^0.12.1",
+    "express": "^4.13.4",
+    "mongodb": "^2.1.7",
+    "mongoose": "^4.4.6",
+    "request": "^2.69.0",
+    "sendgrid": "^2.0.0",
+    "string_decoder": "^0.10.31"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node api.js"
+  },
+  "author": "Galavi",
+  "license": "ISC"
+}
