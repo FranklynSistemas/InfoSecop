@@ -5,12 +5,12 @@ var sendgrid = require('sendgrid')('SG.iOBUxT__TB2fdSFXhCJNeg.n9c0hkkjD_6Z8ROLbr
 
 //---------------------------------------------------------------Mail---------------------------------------
 
-function envioCorreos(datos){
-var correos = ['franking.sistemas@gmail.com','flm@galavi.co', 'amvs@galavi.co'];
+function envioCorreos(correos,datos){
+//var correos = ['franking.sistemas@gmail.com','flm@galavi.co', 'amvs@galavi.co'];
 sendgrid.send({
-  to:       correos,
+  to:        correos,
   from:     'franklyn.sis@hotmail.com',
-  subject:  'Control Numero de registos Secop',
+  subject:  'Control Numero de procesos Secop',
   text:      datos
 }, function(err, json) {
   if (err) { return console.error(err); }
@@ -30,6 +30,8 @@ var NumRegistros = require('../schemas/control');
 var NumRegistrosDep = require('../schemas/controlDepartamentos');
 var NumRegistrosAct = require('../schemas/controlActividades');
 var NumRegistrosActDep = require('../schemas/controlActDep');
+var Usuarios = require('../schemas/usuarios');
+//--------------------------------------------------------------------------------------------------------
 
 var BDResgistros = [NumRegistros,NumRegistrosDep,NumRegistrosAct,NumRegistrosActDep];
 var decoder = new StringDecoder('utf8');
@@ -39,6 +41,29 @@ var fechaConsulta = '01/01/2016';
 var valorConsulta = 1001;
 var valorDepartamento=([]);
 var valorActividades=([]);
+
+
+//trae los usuarios desde la DB
+function TraeUsuarios(idDepartamento,idActividad,datos){
+	var idenDep = idDepartamento != -1 ? idDepartamento : 0;
+	var idenActi = idActividad != -1 ? idActividad : 0;
+	console.log('Consulta Usuarios '+idenDep+' --- '+idenActi);
+	Usuarios.find({"Departamento": idenDep,"Actividad": idenActi},function(err, data){
+		console.log(data);
+		if(data.length != 0){
+			envioCorreos(GeneraCorreos(data),datos);
+		}
+
+	});
+}
+
+function GeneraCorreos(data){
+var ArrayCorreos = ([]);
+	for(i in data){
+		ArrayCorreos.push(data[i].Correo);
+	}
+return ArrayCorreos;
+}
 
 //Trae todos los departamentos desde la bd
 function TraeDepartamentos(){
@@ -445,6 +470,7 @@ function GeneraFechaHora(){
     month[11] = "Diciembre";
 
 	var d = new Date();
+	var hora = d.getHours();
     return   'Hoy: '+d.getDate()+' de '+month[d.getMonth()]+' de '+d.getFullYear()+' a las '+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
 }
 //---------------------------------------------------------------------------------------------------------
@@ -456,16 +482,17 @@ function RevisaDepartamentos(){
 
 	validaNewRegistros(2,numCallRevisaDepartamentos,-1,function(dato){
    					if(dato != 0 && dato != undefined){
-    				var Informacion = 'Se han agregado: '+dato+'Nuevos Registros en el departamento de'+valorDepartamento[numCallRevisaDepartamentos].Departamento+' -- '+GeneraFechaHora();
+    				var Informacion = 'Se han agregado: '+dato+' Nuevos Procesos en el departamento de '+valorDepartamento[numCallRevisaDepartamentos].Departamento+' -- '+GeneraFechaHora();
 					//UltimasProcesos = `hora -- Los procesos de hoy son: ${numReg}`
    					//envioCorreos(Informacion);
+   					TraeUsuarios(numCallRevisaDepartamentos,-1,Informacion);
    					}
    	});
 
 	if(numCallRevisaDepartamentos<valorDepartamento.length-1){
    			setTimeout(function(){
    				RevisaDepartamentos();
-   			},2500);	
+   			},1000);	
    	}else{
    		RevisaActividadesDepartamentos();
    	}
@@ -478,23 +505,26 @@ function RevisaDepartamentos(){
 function RevisaActividades(){
 	console.log('Revisa Actividades');
 	numCallRevisaActividades++;
-
+		if(numCallRevisaActividades < valorActividades.length){
    				validaNewRegistros(3,-1,numCallRevisaActividades,function(dato){
    					if(dato != 0 && dato != undefined){
-    				var Informacion = 'Se han agregado: '+dato+' Nuevos Registros para la actividad '+valorActividades[numCallRevisaActividades].Actividad+' -- '+GeneraFechaHora();
+    				var Informacion = 'Se han agregado: '+dato+' Nuevos Procesos para la actividad '+valorActividades[numCallRevisaActividades].Actividad+' -- '+GeneraFechaHora();
 					//UltimasProcesos = `hora -- Los procesos de hoy son: ${numReg}`
    					//envioCorreos(Informacion);
+   					TraeUsuarios(-1,numCallRevisaActividades,Informacion);
+
    					}
    				});
-
-   			if(numCallRevisaActividades<valorDepartamento.length){
+   		}
+   		
+   		if(numCallRevisaActividades<valorActividades.length){
    			setTimeout(function(){
    				RevisaActividades();
-   			},2000);
+   			},1000);
 
    			}else{
    				RevisaDepartamentos();
-   			}
+   		}
    			
 }
 
@@ -511,9 +541,10 @@ function RevisaActividadesDepartamentos(){
    			 	
    			 	var numActividad = numCallRevisaDepAct === valorActividades.length ? numCallRevisaDepAct-1 : numCallRevisaDepAct;
     			console.log(numDepartamento+'---Genera target----'+numCallRevisaDepAct+"-----"+numActividad);
-    			var Informacion = 'Se han agregado: '+dato+' Nuevos Registros para la Actividad '+valorActividades[numActividad].Actividad+' en el departamento de '+valorDepartamento[numDepartamento].Departamento+' -- '+GeneraFechaHora();
+    			var Informacion = 'Se han agregado: '+dato+' Nuevos Procesos para la Actividad '+valorActividades[numActividad].Actividad+' en el departamento de '+valorDepartamento[numDepartamento].Departamento+' -- '+GeneraFechaHora();
 				//UltimasProcesos = `hora -- Los procesos de hoy son: ${numReg}`
    				//envioCorreos(Informacion);
+   				TraeUsuarios(numDepartamento,numCallRevisaDepAct,Informacion);
    				}
    			});
 
@@ -526,7 +557,6 @@ function RevisaActividadesDepartamentos(){
    				numDepartamento++;
    				
    			}else{
-   				console.log('Terminoooooooooooooooooooooooooooooooooooooooooo');
    				numCallRevisaDepAct = valorActividades.length;
    			}
    		}
@@ -551,21 +581,7 @@ function RevisionPorLotes(){
 		
 }
 
-/*
-function RevisionPorLotes(){
-	RevisaActividades(function(dato){
-		if (dato) {
-		console.log('----------------Termino 1---------------------------------');	
-			RevisaDepartamentos(function(data){
-				if(data){
-			console.log('----------------Termino 2---------------------------------');
-					RevisaActividadesDepartamentos();
-				}
-			});
-		};
-	});
-}
-*/
+
 //----------------------------------------------------------------------------------------------------------
 
 //---------------------------------------------------Main--------------------------------------------------
@@ -577,20 +593,15 @@ setInterval(function(){
     var contador =1;
    	validaNewRegistros(0,-1,-1,function(dato){
     	if(dato != 0){
-    	var Informacion = 'Se han agregado: '+dato+' Nuevos Registros en todo el país -- '+GeneraFechaHora();
+    	var Informacion = 'Se han agregado: '+dato+' Nuevos Procesos en todo el país -- '+GeneraFechaHora();
 		//UltimasProcesos = `hora -- Los procesos de hoy son: ${numReg}`
-   		envioCorreos(Informacion);
-   			RevisionPorLotes();
-   			//RevisionPorLotes();
-   			//numCallRevisaDepartamentos=0;
-   			//RevisaDepartamentos();
-   			/*
-   			RevisaActividades();
-   			RevisaActividadesDepartamentos();
-   			*/
+   		TraeUsuarios(-1,-1,Informacion);
+   		//envioCorreos(Informacion);
+   		RevisionPorLotes();
+   			
     	}
 
     });
     	   		
-}, 1000);
+}, 30000);
 //-----------------------------------------------------------------------

@@ -5,6 +5,7 @@ var   Schema = mongoose.Schema,
 
 var departamentosSchema = new Schema({
    id_Obj:ObjectId,
+   id: Number,
    Departamento : String,
    Valor : String
 });

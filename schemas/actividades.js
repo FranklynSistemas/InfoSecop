@@ -5,6 +5,7 @@ var   Schema = mongoose.Schema,
 
 var actividadesSchema = new Schema({
    id_Obj:ObjectId,
+   id:Number,
    Actividad : String,
    Valor : String
 });
