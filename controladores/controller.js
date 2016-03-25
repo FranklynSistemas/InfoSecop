@@ -1,7 +1,7 @@
 var request = require('request');
 var cheerio = require('cheerio');
 var StringDecoder = require('string_decoder').StringDecoder;
-var sendgrid = require('sendgrid')('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');
+var sendgrid = require('sendgrid')('');
 
 //---------------------------------------------------------------Mail---------------------------------------
 
